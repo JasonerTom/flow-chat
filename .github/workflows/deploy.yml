@@ -1,0 +1,25 @@
+name: Deploy to Cloudflare Pages 
+on:   
+  push:
+  branches: [main]  # 触发分支
+  
+jobs:
+ build-and-deploy:     
+  runs-on: ubuntu-latest     
+steps:      
+# 检出代码       
+- uses: actions/checkout@v4    
+
+# 安装依赖并构建（根据项目类型调整）       
+- name: Setup Node.js         
+uses: actions/setup-node@v3         
+with:           
+node-version: '20'       
+- run: npm ci  # 精确安装依赖       
+- run: npm run build  # 生成静态文件到dist目录       
+# 部署到Cloudflare Pages       
+- name: Publish to Cloudflare         
+uses: cloudflare/wrangler-action@3.0.0         
+with:           
+apiToken: ${{ secrets.CF_API_TOKEN }}           
+command: pages publish ./dist --project-name=YOUR_PROJECT_NAME
